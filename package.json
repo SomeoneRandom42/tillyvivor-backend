@@ -1,0 +1,10 @@
+{
+  "name": "tillyvivor-backend",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "app-root-path": "latest",
+    "express": "latest",
+    "serverless-http": "latest"
+  }
+}

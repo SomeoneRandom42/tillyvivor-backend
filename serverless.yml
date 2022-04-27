@@ -1,0 +1,49 @@
+service: tillyvivor-backend
+frameworkVersion: '3'
+
+custom:
+  tableName: '${self:service}-${sls:stage}-table'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [ TillyvivorTable, Arn ]
+  environment:
+    DYNAMO_TABLE: ${self:custom.tableName}
+
+functions:
+  api:
+    handler: handler.handler
+    name: ${self:service}-${sls:stage}-api
+    events:
+      - httpApi: '*'
+
+resources:
+  Resources:
+    TillyvivorTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.tableName}
