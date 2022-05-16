@@ -1,13 +1,10 @@
 const AWS = require("aws-sdk");
-const express = require("express");
-const serverless = require("serverless-http");
-
-const app = express();
 
 const DYNAMO_TABLE = process.env.DYNAMO_TABLE;
 const dynamoDbClient = new AWS.DynamoDB.DocumentClient();
 
 async function getSingleUser(req, res) {
+  console.log(JSON.stringify(req.params));
     const params = {
       TableName: DYNAMO_TABLE,
       Key: {
@@ -30,7 +27,7 @@ async function getSingleUser(req, res) {
     }
   };
   
-  async function getCollectionUser(req, res) {
+async function getCollectionUser(req, res) {
     const params = {
         TableName: DYNAMO_TABLE,
         ExpressionAttributeValues: {
@@ -39,7 +36,6 @@ async function getSingleUser(req, res) {
         },
         FilterExpression: "begins_with(PK, :userpk) AND begins_with(SK, :profilesk)"
     };
-    console.log(req);
     try {
         const result = await dynamoDbClient.scan(params).promise();
         res.json(result);
@@ -49,12 +45,10 @@ async function getSingleUser(req, res) {
     }
 };
 
-
-
 async function createUser(req, res) {
+  console.log(JSON.stringify(req.body));
     const { PK, SK } = req.body;
     const item = {...req.body};
-    console.log(req.body)
     if (typeof PK !== "string") {
       res.status(400).json({ error: '"PK" must be a string' });
     } else if (typeof SK !== "string") {
@@ -76,8 +70,8 @@ async function createUser(req, res) {
   };
 
 async function updateInventory(req, res) {
+  console.log(JSON.stringify(req.body));
     const update = {...req.body};
-    console.log(update)
     if (typeof update.PK !== "string") {
       res.status(400).json({ error: '"PK" must be a string' });
     } else if (typeof update.SK !== "string") {
@@ -120,6 +114,5 @@ async function updateInventory(req, res) {
 
     
   };
-
 
 module.exports = { getSingleUser, getCollectionUser, createUser, updateInventory }

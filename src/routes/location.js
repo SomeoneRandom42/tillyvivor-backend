@@ -65,9 +65,4 @@ async function createLocation(req, res) {
     }
   };
 
-
-
-
-
-
 module.exports = { getSingleLocation, getCollectionLocation, createLocation }
